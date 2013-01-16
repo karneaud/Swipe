@@ -216,7 +216,7 @@ Swipe.prototype = {
   onTouchMove: function(e) {
 
     // ensure swiping with one touch and not pinching
-    if(e.touches.length > 1 || e.scale && e.scale !== 1) return;
+    if((this._hasTouch) && (e.touches.length > 1 || e.scale && e.scale !== 1)) return;
 
     this.deltaX = (this._hasTouch? e.touches[0].pageX : e.pageX) - this.start.pageX;
 

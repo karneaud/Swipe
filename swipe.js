@@ -168,10 +168,13 @@ Swipe.prototype = {
 
   handleEvent: function(e) {
     switch (e.type) {
-      case 'touchstart' || 'mousedown': this.onTouchStart(e); break;
-      case 'touchmove' || 'mousemove': this.onTouchMove(e); break;
+      case 'touchstart': this.onTouchStart(e); break;
+      case 'mousedown': this.onTouchStart(e); break;
+      case 'touchmove' : this.onTouchMove(e); break;
+      case 'mousemove'  : this.onTouchMove(e); break;
       case 'touchcancel':
-      case 'touchend' || 'mouseup': this.onTouchEnd(e); break;
+      case 'touchend': this.onTouchEnd(e); break;
+      case 'mouseup': this.onTouchEnd(e); break;
       case 'webkitTransitionEnd':
       case 'msTransitionEnd':
       case 'oTransitionEnd':

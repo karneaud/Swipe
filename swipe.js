@@ -35,6 +35,7 @@
   // begin auto slideshow
   this.begin();
   this._hasTouch = ('ontouchstart' in document.documentElement);
+  this._isDesktopSwiping = false;
   // add event listeners
   if (this.element.addEventListener) {
     this.element.addEventListener(this._hasTouch? 'touchstart' : 'mousedown', this, false);
@@ -193,6 +194,8 @@ Swipe.prototype = {
 
   onTouchStart: function(e) {
     
+  if(!this._hasTouch) this._isDesktopSwiping = true;
+	
     this.start = {
 
       // get touch coordinates for delta calculations in onTouchMove
@@ -201,7 +204,7 @@ Swipe.prototype = {
 
       // set initial timestamp of touch sequence
       time: Number( new Date() )
-
+		
     };
 
     // used for testing first onTouchMove event
@@ -220,6 +223,7 @@ Swipe.prototype = {
 
     // ensure swiping with one touch and not pinching
     if((this._hasTouch) && (e.touches.length > 1 || e.scale && e.scale !== 1)) return;
+	if(!this._hasTouch && !this._isDesktopSwiping ) return;
 
     this.deltaX = (this._hasTouch? e.touches[0].pageX : e.pageX) - this.start.pageX;
 
@@ -256,7 +260,7 @@ Swipe.prototype = {
   },
 
   onTouchEnd: function(e) {
-
+	if(!this._hasTouch) this._isDesktopSwiping = false;
     // determine if slide attempt triggers next/prev slide
     var isValidSlide = 
           Number(new Date()) - this.start.time < 250      // if slide duration is less than 250ms

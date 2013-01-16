@@ -34,13 +34,13 @@
 
   // begin auto slideshow
   this.begin();
-
+  this._hasTouch = ('ontouchstart' in document.documentElement);
   // add event listeners
   if (this.element.addEventListener) {
-    this.element.addEventListener('touchstart', this, false);
-    this.element.addEventListener('touchmove', this, false);
-    this.element.addEventListener('touchend', this, false);
-    this.element.addEventListener('touchcancel', this, false);
+    this.element.addEventListener(this._hasTouch? 'touchstart' : 'mousedown', this, false);
+    this.element.addEventListener(this._hasTouch? 'touchmove' : 'mousemove', this, false);
+    this.element.addEventListener(this._hasTouch? 'touchend' : 'mouseup', this, false);
+    this.element.addEventListener(this._hasTouch? 'touchcancel' : 'mouseup', this, false);
     this.element.addEventListener('webkitTransitionEnd', this, false);
     this.element.addEventListener('msTransitionEnd', this, false);
     this.element.addEventListener('oTransitionEnd', this, false);
@@ -168,10 +168,10 @@ Swipe.prototype = {
 
   handleEvent: function(e) {
     switch (e.type) {
-      case 'touchstart': this.onTouchStart(e); break;
-      case 'touchmove': this.onTouchMove(e); break;
-      case 'touchcancel' :
-      case 'touchend': this.onTouchEnd(e); break;
+      case 'touchstart' || 'mousedown': this.onTouchStart(e); break;
+      case 'touchmove' || 'mousemove': this.onTouchMove(e); break;
+      case 'touchcancel':
+      case 'touchend' || 'mouseup': this.onTouchEnd(e); break;
       case 'webkitTransitionEnd':
       case 'msTransitionEnd':
       case 'oTransitionEnd':
@@ -193,8 +193,8 @@ Swipe.prototype = {
     this.start = {
 
       // get touch coordinates for delta calculations in onTouchMove
-      pageX: e.touches[0].pageX,
-      pageY: e.touches[0].pageY,
+      pageX: this._hasTouch? e.touches[0].pageX : e.pageX,
+      pageY: this._hasTouch? e.touches[0].pageY : e.pageY,
 
       // set initial timestamp of touch sequence
       time: Number( new Date() )
@@ -218,11 +218,11 @@ Swipe.prototype = {
     // ensure swiping with one touch and not pinching
     if(e.touches.length > 1 || e.scale && e.scale !== 1) return;
 
-    this.deltaX = e.touches[0].pageX - this.start.pageX;
+    this.deltaX = (this._hasTouch? e.touches[0].pageX : e.pageX) - this.start.pageX;
 
     // determine if scrolling test has run - one time test
     if ( typeof this.isScrolling == 'undefined') {
-      this.isScrolling = !!( this.isScrolling || Math.abs(this.deltaX) < Math.abs(e.touches[0].pageY - this.start.pageY) );
+      this.isScrolling = !!( this.isScrolling || Math.abs(this.deltaX) < Math.abs(this._hasTouch? e.touches[0].pageY : e.pageY - this.start.pageY) );
     }
 
     // if user is not trying to scroll vertically

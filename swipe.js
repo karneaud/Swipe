@@ -141,7 +141,7 @@ Swipe.prototype = {
    clearTimeout(this.interval);
 	
    if (this.index < this.length - 1) this.slide(this.index+1, this.speed); // if not last slide
-   else if(this.callback) this.callback(this.index, this.slides[this.index]); // if last let callback indicate if wanting to return to start
+   else if(this.callback) this.callback(null,this.index, this.slides[this.index]); // if last let callback indicate if wanting to return to start
    else this.slide(0, this.speed); //if last slide return to start	
 
   },

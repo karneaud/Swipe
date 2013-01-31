@@ -17,7 +17,7 @@
   this.options = options || {};
   this.index = this.options.startSlide || 0;
   this.speed = this.options.speed || 300;
-  this.callback = this.options.callback || function() {};
+  this.callback = this.options.callback? this.options.callback : null;
   this.delay = this.options.auto || 0;
 
   // reference dom elements

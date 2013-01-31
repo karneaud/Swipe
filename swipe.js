@@ -189,7 +189,7 @@ Swipe.prototype = {
     
     if (this.delay) this.begin();
 
-    this.callback(e, this.index, this.slides[this.index]);
+    if(this.callback) this.callback(e, this.index, this.slides[this.index]);
 
   },
 

@@ -34,14 +34,14 @@
 
   // begin auto slideshow
   this.begin();
-  this._hasTouch = ('ontouchstart' in document.documentElement);
+  this._hasTouch = false;//('ontouchstart' in document.documentElement);
   this._isDesktopSwiping = false;
   // add event listeners
   if (this.element.addEventListener) {
-    this.element.addEventListener(this._hasTouch? 'touchstart' : 'mousedown', this, false);
-    this.element.addEventListener(this._hasTouch? 'touchmove' : 'mousemove', this, false);
-    this.element.addEventListener(this._hasTouch? 'touchend' : 'mouseup', this, false);
-    this.element.addEventListener(this._hasTouch? 'touchcancel' : 'mouseup', this, false);
+    this.element.addEventListener('touchstart' , this, false);
+    this.element.addEventListener('touchmove' , this, false);
+    this.element.addEventListener('touchend' , this, false);
+    this.element.addEventListener('touchcancel', this, false);
     this.element.addEventListener('webkitTransitionEnd', this, false);
     this.element.addEventListener('msTransitionEnd', this, false);
     this.element.addEventListener('oTransitionEnd', this, false);
@@ -172,12 +172,9 @@ Swipe.prototype = {
   handleEvent: function(e) {
     switch (e.type) {
       case 'touchstart': this.onTouchStart(e); break;
-      case 'mousedown': this.onTouchStart(e); break;
       case 'touchmove' : this.onTouchMove(e); break;
-      case 'mousemove'  : this.onTouchMove(e); break;
       case 'touchcancel':
       case 'touchend': this.onTouchEnd(e); break;
-      case 'mouseup': this.onTouchEnd(e); break;
       case 'webkitTransitionEnd':
       case 'msTransitionEnd':
       case 'oTransitionEnd':
@@ -196,13 +193,13 @@ Swipe.prototype = {
 
   onTouchStart: function(e) {
     
-  if(!this._hasTouch) this._isDesktopSwiping = true;
+  this._isDesktopSwiping = true;
 	
     this.start = {
 
       // get touch coordinates for delta calculations in onTouchMove
-      pageX: this._hasTouch? e.touches[0].pageX : e.pageX,
-      pageY: this._hasTouch? e.touches[0].pageY : e.pageY,
+      pageX: e.touches[0].pageX,
+      pageY: e.touches[0].pageY,
 
       // set initial timestamp of touch sequence
       time: Number( new Date() )
@@ -224,14 +221,14 @@ Swipe.prototype = {
   onTouchMove: function(e) {
 
     // ensure swiping with one touch and not pinching
-    if((this._hasTouch) && (e.touches.length > 1 || e.scale && e.scale !== 1)) return;
-	if(!this._hasTouch && !this._isDesktopSwiping ) return;
+    if((e.touches.length > 1 || e.scale && e.scale !== 1)) return;
+	if(!this._isDesktopSwiping ) return;
 
-    this.deltaX = (this._hasTouch? e.touches[0].pageX : e.pageX) - this.start.pageX;
+    this.deltaX = (e.touches[0].pageX) - this.start.pageX;
 
     // determine if scrolling test has run - one time test
     if ( typeof this.isScrolling == 'undefined') {
-      this.isScrolling = !!( this.isScrolling || Math.abs(this.deltaX) < Math.abs(this._hasTouch? e.touches[0].pageY : e.pageY - this.start.pageY) );
+      this.isScrolling = !!( this.isScrolling || Math.abs(this.deltaX) < Math.abs(e.touches[0].pageY- this.start.pageY) );
     }
 
     // if user is not trying to scroll vertically
@@ -262,7 +259,7 @@ Swipe.prototype = {
   },
 
   onTouchEnd: function(e) {
-	if(!this._hasTouch) this._isDesktopSwiping = false;
+	this._isDesktopSwiping = false;
     // determine if slide attempt triggers next/prev slide
     var isValidSlide = 
           Number(new Date()) - this.start.time < 250      // if slide duration is less than 250ms
